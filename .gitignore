@@ -15,3 +15,5 @@ __pycache__
 
 
 _draft/
+*-checkpoint*
+.DS_Store
