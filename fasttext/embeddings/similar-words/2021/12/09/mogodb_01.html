@@ -4,24 +4,40 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Setup MongoDB Atlas Database | Steven’s Tech Blog</title>
+<title>Upsert DataFrame to MongoDB Step by Step | Steven’s Tech Blog</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Setup MongoDB Atlas Database" />
+<meta property="og:title" content="Upsert DataFrame to MongoDB Step by Step" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="An easy to use blogging platform with support for Jupyter Notebooks." />
-<meta property="og:description" content="An easy to use blogging platform with support for Jupyter Notebooks." />
-<link rel="canonical" href="https://stevenchen521.github.io/blogging/2021/12/09/mogodb_01.html" />
-<meta property="og:url" content="https://stevenchen521.github.io/blogging/2021/12/09/mogodb_01.html" />
+<meta name="description" content="MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. Here I share my gained knowledge in the form of the exercise." />
+<meta property="og:description" content="MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. Here I share my gained knowledge in the form of the exercise." />
+<link rel="canonical" href="https://stevenchen521.github.io/blogging/fasttext/embeddings/similar-words/2021/12/09/mogodb_01.html" />
+<meta property="og:url" content="https://stevenchen521.github.io/blogging/fasttext/embeddings/similar-words/2021/12/09/mogodb_01.html" />
 <meta property="og:site_name" content="Steven’s Tech Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2021-12-09T00:00:00-06:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Setup MongoDB Atlas Database" />
+<meta property="twitter:title" content="Upsert DataFrame to MongoDB Step by Step" />
 <script type="application/ld+json">
-{"url":"https://stevenchen521.github.io/blogging/2021/12/09/mogodb_01.html","headline":"Setup MongoDB Atlas Database","dateModified":"2021-12-09T00:00:00-06:00","datePublished":"2021-12-09T00:00:00-06:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://stevenchen521.github.io/blogging/2021/12/09/mogodb_01.html"},"description":"An easy to use blogging platform with support for Jupyter Notebooks.","@context":"https://schema.org"}</script>
+{"url":"https://stevenchen521.github.io/blogging/fasttext/embeddings/similar-words/2021/12/09/mogodb_01.html","@type":"BlogPosting","headline":"Upsert DataFrame to MongoDB Step by Step","dateModified":"2021-12-09T00:00:00-06:00","datePublished":"2021-12-09T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://stevenchen521.github.io/blogging/fasttext/embeddings/similar-words/2021/12/09/mogodb_01.html"},"description":"MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. Here I share my gained knowledge in the form of the exercise.","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/blogging/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://stevenchen521.github.io/blogging/feed.xml" title="Steven's Tech Blog" /><link rel="shortcut icon" type="image/x-icon" href="/blogging/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.css" integrity="sha512-h7nl+xz8wgDlNM4NqKEM4F1NkIRS17M9+uJwIGwuo8vGqIl4BhuCKdxjWEINm+xyrUjNCnK5dCrhM0sj+wTIXw==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.js" integrity="sha512-/CMIhXiDA3m2c9kzRyd97MTb3MC6OVnx4TElQ7fkkoRghwDf6gi41gaT1PwF270W6+J60uTmwgeRpNpJdRV6sg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js" integrity="sha512-Do7uJAaHZm5OLrIv/yN4w0iG1dbu01kzdMNnFfu/mAqgUk6Nniv2JYHcwH+cNwjqgLcqcuBBk+JRvprLVI8azg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha512-0doc9hKxR3PYwso42RD1p5ySZpzzuDiOwMrdCEh2WdJZCjcmFKc/wEnL+z8fBQrnHoiNWbo+3fiGkOYXBdQp4A==" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
 
 <script>
 function wrap_img(fn) {
@@ -73,16 +89,29 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Setup MongoDB Atlas Database</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-12-09T00:00:00-06:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">Upsert DataFrame to MongoDB Step by Step</h1><p class="page-description">MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. Here I share my gained knowledge in the form of the exercise.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-12-09T00:00:00-06:00" itemprop="datePublished">
         Dec 9, 2021
       </time>
        • <span class="read-time" title="Estimated read time">
     
     
-      3 min read
+      2 min read
     
 </span></p>
 
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blogging/categories/#fasttext">fasttext</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blogging/categories/#embeddings">embeddings</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blogging/categories/#similar-words">similar-words</a>
+        
+      
+      </p>
     
 
     
@@ -116,7 +145,16 @@ window.onload = wrap_img;
       </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <!--
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#Requirement">Requirement </a></li>
+<li class="toc-entry toc-h1"><a href="#Setup-MongoDB-Atlas-Database">Setup MongoDB Atlas Database </a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#Update-&-upsert">Update &amp; upsert </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#Bulk-update">Bulk update </a></li>
+<li class="toc-entry toc-h1"><a href="#DataFrame-upsert">DataFrame upsert </a></li>
+</ul><!--
 #################################################
 ### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
 #################################################
@@ -125,11 +163,13 @@ window.onload = wrap_img;
 
 <div class="container" id="notebook-container">
         
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. My philosophy to learn a new tech is always practicing. Therefore, here I share my gained knowledge in the form of the exercise.</p>
-<p>Enough of the talk, let’s start!</p>
-<h1 id="Requirement">Requirement<a class="anchor-link" href="#Requirement"> </a></h1><p>I am building some personal application with Python. The requirement is to create or update the MongoDB collection(or table in the relational database) with rows in DataFrame. More specifically, for the rows that don't exist we do the creation based on the keys in the DataFrame. Otherwise the update should be performed.</p>
+<h1 id="Requirement">
+<a class="anchor" href="#Requirement" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirement<a class="anchor-link" href="#Requirement"> </a>
+</h1>
+<p>I am building some personal application with Python. The requirement is to create or update the MongoDB collection(or table in the relational database) with rows in DataFrame. More specifically, for the rows that don't exist we do the creation based on the keys in the DataFrame. Otherwise the update should be performed.</p>
 
 </div>
 </div>
@@ -152,6 +192,18 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Setup-MongoDB-Atlas-Database">
+<a class="anchor" href="#Setup-MongoDB-Atlas-Database" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup MongoDB Atlas Database<a class="anchor-link" href="#Setup-MongoDB-Atlas-Database"> </a>
+</h1>
+<p>Get a free cloud based MongoDB database <a href="https://www.mongodb.com/cloud/atlas/lp/try2?utm_source=google&amp;utm_campaign=gs_apac_hong_kong_search_core_brand_atlas_desktop&amp;utm_term=mongodb%20atlas&amp;utm_medium=cpc_paid_search&amp;utm_ad=e&amp;utm_ad_campaign_id=12212624344&amp;adgroup=115749709143&amp;gclid=Cj0KCQiAqbyNBhC2ARIsALDwAsApK8irJVZnesxewSitv8kTagWactqhvZPG4gpz5CKx0JV3Fh1pEIsaAttLEALw_wcB">here</a>.</p>
+<p>Connect to the database and create the test database</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -159,8 +211,8 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">DB_NAME</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span>
-<span class="n">COLLECTION_NAME</span> <span class="o">=</span> <span class="s1">&#39;employee&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">DB_NAME</span> <span class="o">=</span> <span class="s1">'test'</span>
+<span class="n">COLLECTION_NAME</span> <span class="o">=</span> <span class="s1">'employee'</span>
 </pre></div>
 
     </div>
@@ -190,7 +242,8 @@ window.onload = wrap_img;
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Prepare a test DataFrame df_emplyee that contains three columns</p>
 <ul>
@@ -285,7 +338,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">collection</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">df_emplyee</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">collection</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">df_emplyee</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">))</span>
 <span class="n">show_collection</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
 </pre></div>
 
@@ -327,21 +380,21 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b0d067650e3488de556924</td>
+      <td>61b217d096bc99f7804c7a01</td>
       <td>user1</td>
       <td>25</td>
       <td>male</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b0d067650e3488de556925</td>
+      <td>61b217d096bc99f7804c7a02</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>61b0d067650e3488de556926</td>
+      <td>61b217d096bc99f7804c7a03</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
@@ -359,9 +412,13 @@ window.onload = wrap_img;
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Update-&amp;-upsert">Update &amp; upsert<a class="anchor-link" href="#Update-&amp;-upsert"> </a></h2><p>Change the age of user1 to 32</p>
+<h2 id="Update-&amp;-upsert">
+<a class="anchor" href="#Update-&amp;-upsert" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update &amp; upsert<a class="anchor-link" href="#Update-&amp;-upsert"> </a>
+</h2>
+<p>Change the age of user1 to 32</p>
 
 </div>
 </div>
@@ -373,8 +430,8 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">myquery</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;user1&quot;</span> <span class="p">}</span>
-<span class="n">newvalues</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="s2">&quot;32&quot;</span> <span class="p">},</span> <span class="s2">&quot;$currentDate&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;lastModifiedAt&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span> <span class="p">}}</span> <span class="p">}</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">myquery</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"user1"</span> <span class="p">}</span>
+<span class="n">newvalues</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"age"</span><span class="p">:</span> <span class="s2">"32"</span> <span class="p">},</span> <span class="s2">"$currentDate"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"lastModifiedAt"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"$type"</span><span class="p">:</span> <span class="s2">"date"</span> <span class="p">}}</span> <span class="p">}</span>
 <span class="n">collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">myquery</span><span class="p">,</span> <span class="n">newvalues</span><span class="p">)</span>
 </pre></div>
 
@@ -390,7 +447,7 @@ window.onload = wrap_img;
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pymongo.results.UpdateResult at 0x7f9972e869c0&gt;</pre>
+<pre>&lt;pymongo.results.UpdateResult at 0x7f4b73fe9340&gt;</pre>
 </div>
 
 </div>
@@ -450,15 +507,15 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b0d067650e3488de556924</td>
+      <td>61b217d096bc99f7804c7a01</td>
       <td>user1</td>
       <td>32</td>
       <td>male</td>
-      <td>2021-12-08 15:33:59.537</td>
+      <td>2021-12-09 14:50:57.251</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b0d067650e3488de556925</td>
+      <td>61b217d096bc99f7804c7a02</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
@@ -466,7 +523,7 @@ window.onload = wrap_img;
     </tr>
     <tr>
       <th>2</th>
-      <td>61b0d067650e3488de556926</td>
+      <td>61b217d096bc99f7804c7a03</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
@@ -492,10 +549,10 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;user1&quot;</span><span class="p">},</span> 
-                      <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:{</span><span class="s2">&quot;age&quot;</span><span class="p">:</span><span class="mi">32</span><span class="p">},</span>
-                              <span class="s2">&quot;$currentDate&quot;</span><span class="p">:</span> 
-                              <span class="p">{</span><span class="s2">&quot;lastModifiedAt&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span> <span class="p">}}</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"user1"</span><span class="p">},</span> 
+                      <span class="p">{</span><span class="s2">"$set"</span><span class="p">:{</span><span class="s2">"age"</span><span class="p">:</span><span class="mi">32</span><span class="p">},</span>
+                              <span class="s2">"$currentDate"</span><span class="p">:</span> 
+                              <span class="p">{</span><span class="s2">"lastModifiedAt"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"$type"</span><span class="p">:</span> <span class="s2">"date"</span> <span class="p">}}</span>
                       <span class="p">},</span> 
                       <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">show_collection</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
@@ -540,15 +597,15 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b0d067650e3488de556924</td>
+      <td>61b217d096bc99f7804c7a01</td>
       <td>user1</td>
       <td>32</td>
       <td>male</td>
-      <td>2021-12-08 15:33:59.777</td>
+      <td>2021-12-09 14:50:57.655</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b0d067650e3488de556925</td>
+      <td>61b217d096bc99f7804c7a02</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
@@ -556,7 +613,7 @@ window.onload = wrap_img;
     </tr>
     <tr>
       <th>2</th>
-      <td>61b0d067650e3488de556926</td>
+      <td>61b217d096bc99f7804c7a03</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
@@ -582,10 +639,10 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;user4&quot;</span><span class="p">},</span> 
-                      <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:{</span><span class="s2">&quot;age&quot;</span><span class="p">:</span><span class="mi">32</span><span class="p">},</span> 
-                              <span class="s2">&quot;$setOnInsert&quot;</span><span class="p">:{</span><span class="s2">&quot;sex&quot;</span><span class="p">:</span><span class="s2">&quot;female&quot;</span><span class="p">},</span>
-                              <span class="s2">&quot;$currentDate&quot;</span><span class="p">:{</span><span class="s2">&quot;lastModifiedAt&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span> <span class="p">}}</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"user4"</span><span class="p">},</span> 
+                      <span class="p">{</span><span class="s2">"$set"</span><span class="p">:{</span><span class="s2">"age"</span><span class="p">:</span><span class="mi">32</span><span class="p">},</span> 
+                              <span class="s2">"$setOnInsert"</span><span class="p">:{</span><span class="s2">"sex"</span><span class="p">:</span><span class="s2">"female"</span><span class="p">},</span>
+                              <span class="s2">"$currentDate"</span><span class="p">:{</span><span class="s2">"lastModifiedAt"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"$type"</span><span class="p">:</span> <span class="s2">"date"</span> <span class="p">}}</span>
                       <span class="p">},</span> 
                       <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">show_collection</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
@@ -630,15 +687,15 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b0d067650e3488de556924</td>
+      <td>61b217d096bc99f7804c7a01</td>
       <td>user1</td>
       <td>32</td>
       <td>male</td>
-      <td>2021-12-08 15:33:59.777</td>
+      <td>2021-12-09 14:50:57.655</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b0d067650e3488de556925</td>
+      <td>61b217d096bc99f7804c7a02</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
@@ -646,7 +703,7 @@ window.onload = wrap_img;
     </tr>
     <tr>
       <th>2</th>
-      <td>61b0d067650e3488de556926</td>
+      <td>61b217d096bc99f7804c7a03</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
@@ -654,11 +711,11 @@ window.onload = wrap_img;
     </tr>
     <tr>
       <th>3</th>
-      <td>61b0d06712c824e29ed6221a</td>
+      <td>61b217d212c824e29e2d3fbc</td>
       <td>user4</td>
       <td>32</td>
       <td>female</td>
-      <td>2021-12-08 15:33:59.989</td>
+      <td>2021-12-09 14:50:58.072</td>
     </tr>
   </tbody>
 </table>
@@ -673,9 +730,12 @@ window.onload = wrap_img;
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Bulk-update">Bulk update<a class="anchor-link" href="#Bulk-update"> </a></h1>
+<h1 id="Bulk-update">
+<a class="anchor" href="#Bulk-update" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bulk update<a class="anchor-link" href="#Bulk-update"> </a>
+</h1>
 </div>
 </div>
 </div>
@@ -686,16 +746,16 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_emplyee</span> <span class="o">=</span> <span class="n">df_emplyee</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;user5&#39;</span><span class="p">,</span><span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="mi">65</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">:</span><span class="s1">&#39;male&#39;</span><span class="p">},</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_emplyee</span> <span class="o">=</span> <span class="n">df_emplyee</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">'name'</span><span class="p">:</span><span class="s1">'user5'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">:</span> <span class="mi">65</span><span class="p">,</span> <span class="s1">'sex'</span><span class="p">:</span><span class="s1">'male'</span><span class="p">},</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="n">updates</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">df_emplyee</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
         <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">updates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="n">UpdateOne</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)},</span> 
-                <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> 
-                         <span class="s2">&quot;$currentDate&quot;</span><span class="p">:{</span><span class="s2">&quot;lastModifiedAt&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span> <span class="p">}}</span>
+                <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)},</span> 
+                <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> 
+                         <span class="s2">"$currentDate"</span><span class="p">:{</span><span class="s2">"lastModifiedAt"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"$type"</span><span class="p">:</span> <span class="s2">"date"</span> <span class="p">}}</span>
                 <span class="p">},</span> 
                 <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)),</span>
@@ -743,43 +803,43 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b0d067650e3488de556924</td>
+      <td>61b217d096bc99f7804c7a01</td>
       <td>user1</td>
       <td>25</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.236</td>
+      <td>2021-12-09 14:50:58.445</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b0d067650e3488de556925</td>
+      <td>61b217d096bc99f7804c7a02</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.237</td>
+      <td>2021-12-09 14:50:58.445</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>61b0d067650e3488de556926</td>
+      <td>61b217d096bc99f7804c7a03</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.237</td>
+      <td>2021-12-09 14:50:58.445</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>61b0d06712c824e29ed6221a</td>
+      <td>61b217d212c824e29e2d3fbc</td>
       <td>user4</td>
       <td>32</td>
       <td>female</td>
-      <td>2021-12-08 15:33:59.989</td>
+      <td>2021-12-09 14:50:58.072</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>61b0d06812c824e29ed6223b</td>
+      <td>61b217d212c824e29e2d3fcb</td>
       <td>user5</td>
       <td>65</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.237</td>
+      <td>2021-12-09 14:50:58.445</td>
     </tr>
   </tbody>
 </table>
@@ -794,9 +854,12 @@ window.onload = wrap_img;
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="DataFrame-upsert">DataFrame upsert<a class="anchor-link" href="#DataFrame-upsert"> </a></h1>
+<h1 id="DataFrame-upsert">
+<a class="anchor" href="#DataFrame-upsert" aria-hidden="true"><span class="octicon octicon-link"></span></a>DataFrame upsert<a class="anchor-link" href="#DataFrame-upsert"> </a>
+</h1>
 </div>
 </div>
 </div>
@@ -818,8 +881,8 @@ window.onload = wrap_img;
         <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">updates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="n">UpdateOne</span><span class="p">(</span>
                 <span class="n">row_query</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">keys</span><span class="p">),</span> 
-                <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
-                    <span class="s2">&quot;$currentDate&quot;</span><span class="p">:{</span><span class="s2">&quot;lastModifiedAt&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;$type&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span> <span class="p">}}</span>
+                <span class="p">{</span><span class="s1">'$set'</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+                    <span class="s2">"$currentDate"</span><span class="p">:{</span><span class="s2">"lastModifiedAt"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"$type"</span><span class="p">:</span> <span class="s2">"date"</span> <span class="p">}}</span>
                 <span class="p">},</span> 
                 <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span> 
             <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
@@ -883,43 +946,43 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b0d067650e3488de556924</td>
+      <td>61b217d096bc99f7804c7a01</td>
       <td>user1</td>
       <td>25</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.236</td>
+      <td>2021-12-09 14:50:58.445</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b0d067650e3488de556925</td>
+      <td>61b217d096bc99f7804c7a02</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.237</td>
+      <td>2021-12-09 14:50:58.445</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>61b0d067650e3488de556926</td>
+      <td>61b217d096bc99f7804c7a03</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.237</td>
+      <td>2021-12-09 14:50:58.445</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>61b0d06712c824e29ed6221a</td>
+      <td>61b217d212c824e29e2d3fbc</td>
       <td>user4</td>
       <td>32</td>
       <td>female</td>
-      <td>2021-12-08 15:33:59.989</td>
+      <td>2021-12-09 14:50:58.072</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>61b0d06812c824e29ed6223b</td>
+      <td>61b217d212c824e29e2d3fcb</td>
       <td>user5</td>
       <td>65</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.237</td>
+      <td>2021-12-09 14:50:58.445</td>
     </tr>
   </tbody>
 </table>
@@ -941,7 +1004,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_emplyee</span> <span class="o">=</span> <span class="n">df_emplyee</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;user6&#39;</span><span class="p">,</span><span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="mi">37</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">:</span><span class="s1">&#39;female&#39;</span><span class="p">},</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_emplyee</span> <span class="o">=</span> <span class="n">df_emplyee</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">'name'</span><span class="p">:</span><span class="s1">'user6'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">:</span> <span class="mi">37</span><span class="p">,</span> <span class="s1">'sex'</span><span class="p">:</span><span class="s1">'female'</span><span class="p">},</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">df_emplyee</span>
 </pre></div>
 
@@ -1030,7 +1093,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_upsert</span><span class="p">(</span><span class="n">df_emplyee</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_upsert</span><span class="p">(</span><span class="n">df_emplyee</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="p">[</span><span class="s1">'name'</span><span class="p">])</span>
 <span class="n">show_collection</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
 </pre></div>
 
@@ -1073,51 +1136,51 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b0d067650e3488de556924</td>
+      <td>61b217d096bc99f7804c7a01</td>
       <td>user1</td>
       <td>25</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.609</td>
+      <td>2021-12-09 14:51:03.115</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b0d067650e3488de556925</td>
+      <td>61b217d096bc99f7804c7a02</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.610</td>
+      <td>2021-12-09 14:51:03.115</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>61b0d067650e3488de556926</td>
+      <td>61b217d096bc99f7804c7a03</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.610</td>
+      <td>2021-12-09 14:51:03.115</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>61b0d06712c824e29ed6221a</td>
+      <td>61b217d212c824e29e2d3fbc</td>
       <td>user4</td>
       <td>32</td>
       <td>female</td>
-      <td>2021-12-08 15:33:59.989</td>
+      <td>2021-12-09 14:50:58.072</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>61b0d06812c824e29ed6223b</td>
+      <td>61b217d212c824e29e2d3fcb</td>
       <td>user5</td>
       <td>65</td>
       <td>male</td>
-      <td>2021-12-08 15:34:00.610</td>
+      <td>2021-12-09 14:51:03.116</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>61b0d06812c824e29ed62261</td>
+      <td>61b217d712c824e29e2d4061</td>
       <td>user6</td>
       <td>37</td>
       <td>female</td>
-      <td>2021-12-08 15:34:00.610</td>
+      <td>2021-12-09 14:51:03.116</td>
     </tr>
   </tbody>
 </table>
@@ -1136,7 +1199,7 @@ window.onload = wrap_img;
 
 
 
-  </div><a class="u-url" href="/blogging/2021/12/09/mogodb_01.html" hidden></a>
+  </div><a class="u-url" href="/blogging/fasttext/embeddings/similar-words/2021/12/09/mogodb_01.html" hidden></a>
 </article>
 
       </div>
@@ -1156,11 +1219,11 @@ window.onload = wrap_img;
         </p>
       </div>
       <div class="footer-col">
-        <p>An easy to use blogging platform with support for Jupyter Notebooks.</p>
+        <p>Life learning</p>
       </div>
     </div>
 
-    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/fastai" title="fastai"><svg class="svg-icon grey"><use xlink:href="/blogging/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/fastdotai" title="fastdotai"><svg class="svg-icon grey"><use xlink:href="/blogging/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/fastai" title="fastai"><svg class="svg-icon grey"><use xlink:href="/blogging/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/StevenChen521" title="StevenChen521"><svg class="svg-icon grey"><use xlink:href="/blogging/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
 </div>
 
   </div>
