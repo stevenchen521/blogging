@@ -8,8 +8,8 @@
 <meta name="generator" content="Jekyll v4.1.1" />
 <meta property="og:title" content="Upsert DataFrame to MongoDB Step by Step" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. Here I share my gained knowledge in the form of the exercise." />
-<meta property="og:description" content="MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. Here I share my gained knowledge in the form of the exercise." />
+<meta name="description" content="MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. In this post I will share how to ‘upsert’ the Pandas DataFrame against the MongoDB" />
+<meta property="og:description" content="MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. In this post I will share how to ‘upsert’ the Pandas DataFrame against the MongoDB" />
 <link rel="canonical" href="https://stevenchen521.github.io/blogging/nosql/python/2021/12/09/mogodb_01.html" />
 <meta property="og:url" content="https://stevenchen521.github.io/blogging/nosql/python/2021/12/09/mogodb_01.html" />
 <meta property="og:site_name" content="Steven’s Tech Blog" />
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Upsert DataFrame to MongoDB Step by Step" />
 <script type="application/ld+json">
-{"url":"https://stevenchen521.github.io/blogging/nosql/python/2021/12/09/mogodb_01.html","@type":"BlogPosting","headline":"Upsert DataFrame to MongoDB Step by Step","dateModified":"2021-12-09T00:00:00-06:00","datePublished":"2021-12-09T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://stevenchen521.github.io/blogging/nosql/python/2021/12/09/mogodb_01.html"},"description":"MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. Here I share my gained knowledge in the form of the exercise.","@context":"https://schema.org"}</script>
+{"url":"https://stevenchen521.github.io/blogging/nosql/python/2021/12/09/mogodb_01.html","@type":"BlogPosting","headline":"Upsert DataFrame to MongoDB Step by Step","dateModified":"2021-12-09T00:00:00-06:00","datePublished":"2021-12-09T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://stevenchen521.github.io/blogging/nosql/python/2021/12/09/mogodb_01.html"},"description":"MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. In this post I will share how to ‘upsert’ the Pandas DataFrame against the MongoDB","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/blogging/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://stevenchen521.github.io/blogging/feed.xml" title="Steven's Tech Blog" /><link rel="shortcut icon" type="image/x-icon" href="/blogging/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -89,13 +89,13 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Upsert DataFrame to MongoDB Step by Step</h1><p class="page-description">MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. Here I share my gained knowledge in the form of the exercise.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-12-09T00:00:00-06:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">Upsert DataFrame to MongoDB Step by Step</h1><p class="page-description">MongoDB is a rich document-oriented NoSQL database. I spent some time diving into it. In this post I will share how to 'upsert' the Pandas DataFrame against the MongoDB</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-12-09T00:00:00-06:00" itemprop="datePublished">
         Dec 9, 2021
       </time>
        • <span class="read-time" title="Estimated read time">
     
     
-      2 min read
+      3 min read
     
 </span></p>
 
@@ -144,13 +144,11 @@ window.onload = wrap_img;
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h1"><a href="#Requirement">Requirement </a></li>
-<li class="toc-entry toc-h1"><a href="#Setup-MongoDB-Atlas-Database">Setup MongoDB Atlas Database </a>
-<ul>
-<li class="toc-entry toc-h2"><a href="#Update-&-upsert">Update &amp; upsert </a></li>
-</ul>
-</li>
+<li class="toc-entry toc-h1"><a href="#Setup-Cloud-MongoDB-for-Free">Setup Cloud MongoDB for Free </a></li>
+<li class="toc-entry toc-h1"><a href="#Update">Update </a></li>
+<li class="toc-entry toc-h1"><a href="#Upsert">Upsert </a></li>
 <li class="toc-entry toc-h1"><a href="#Bulk-update">Bulk update </a></li>
-<li class="toc-entry toc-h1"><a href="#DataFrame-upsert">DataFrame upsert </a></li>
+<li class="toc-entry toc-h1"><a href="#DataFrame-Upsert">DataFrame Upsert </a></li>
 </ul><!--
 #################################################
 ### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
@@ -166,7 +164,7 @@ window.onload = wrap_img;
 <h1 id="Requirement">
 <a class="anchor" href="#Requirement" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirement<a class="anchor-link" href="#Requirement"> </a>
 </h1>
-<p>I am building some personal application with Python. The requirement is to create or update the MongoDB collection(or table in the relational database) with rows in DataFrame. More specifically, for the rows that don't exist we do the creation based on the keys in the DataFrame. Otherwise the update should be performed.</p>
+<p>Let's say we have a DataFrame. We want to 'upsert'(Insert/update) the MongoDB collection with rows in DataFrame. More specifically, for the rows that don't exist we do the creation, otherwise the update should be performed.</p>
 
 </div>
 </div>
@@ -192,11 +190,11 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Setup-MongoDB-Atlas-Database">
-<a class="anchor" href="#Setup-MongoDB-Atlas-Database" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup MongoDB Atlas Database<a class="anchor-link" href="#Setup-MongoDB-Atlas-Database"> </a>
+<h1 id="Setup-Cloud-MongoDB-for-Free">
+<a class="anchor" href="#Setup-Cloud-MongoDB-for-Free" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup Cloud MongoDB for Free<a class="anchor-link" href="#Setup-Cloud-MongoDB-for-Free"> </a>
 </h1>
-<p>Get a free cloud based MongoDB database <a href="https://www.mongodb.com/cloud/atlas/lp/try2?utm_source=google&amp;utm_campaign=gs_apac_hong_kong_search_core_brand_atlas_desktop&amp;utm_term=mongodb%20atlas&amp;utm_medium=cpc_paid_search&amp;utm_ad=e&amp;utm_ad_campaign_id=12212624344&amp;adgroup=115749709143&amp;gclid=Cj0KCQiAqbyNBhC2ARIsALDwAsApK8irJVZnesxewSitv8kTagWactqhvZPG4gpz5CKx0JV3Fh1pEIsaAttLEALw_wcB">here</a>.</p>
-<p>Connect to the database and create the test database</p>
+<p>Setup a free cloud based MongoDB database <a href="https://www.mongodb.com/cloud/atlas/lp/try2?utm_source=google&amp;utm_campaign=gs_apac_hong_kong_search_core_brand_atlas_desktop&amp;utm_term=mongodb%20atlas&amp;utm_medium=cpc_paid_search&amp;utm_ad=e&amp;utm_ad_campaign_id=12212624344&amp;adgroup=115749709143&amp;gclid=Cj0KCQiAqbyNBhC2ARIsALDwAsApK8irJVZnesxewSitv8kTagWactqhvZPG4gpz5CKx0JV3Fh1pEIsaAttLEALw_wcB">here</a>.</p>
+<p>Connect to the database and create the 'test' database and 'employee' collection.</p>
 
 </div>
 </div>
@@ -227,7 +225,7 @@ window.onload = wrap_img;
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">CONN_STR</span><span class="p">)</span>
-<span class="n">client</span><span class="o">.</span><span class="n">drop_database</span><span class="p">(</span><span class="n">DB_NAME</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">drop_database</span><span class="p">(</span><span class="n">DB_NAME</span><span class="p">)</span> <span class="c1"># clear the database</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">DB_NAME</span><span class="p">]</span> <span class="c1"># switch database</span>
 <span class="n">collection</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">COLLECTION_NAME</span><span class="p">]</span> <span class="c1"># get the collection</span>
 </pre></div>
@@ -242,7 +240,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Prepare a test DataFrame df_emplyee that contains three columns</p>
+<p>Prepare a test DataFrame df_emplyee that contains three columns:</p>
 <ul>
 <li>name</li>
 <li>age</li>
@@ -328,6 +326,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Once the records are inserted to the collection, we get the _id column for every row. <a href="https://www.mongodb.com/blog/post/on-selecting-a-shard-key-for-mongodb">'_id' column is a potentially a good shard key used by MongoDB cluster. </a></p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -377,21 +383,21 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b217d096bc99f7804c7a01</td>
+      <td>61b305066dc6466313715b40</td>
       <td>user1</td>
       <td>25</td>
       <td>male</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b217d096bc99f7804c7a02</td>
+      <td>61b305066dc6466313715b41</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>61b217d096bc99f7804c7a03</td>
+      <td>61b305066dc6466313715b42</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
@@ -412,10 +418,17 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Update-&amp;-upsert">
-<a class="anchor" href="#Update-&amp;-upsert" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update &amp; upsert<a class="anchor-link" href="#Update-&amp;-upsert"> </a>
-</h2>
-<p>Change the age of user1 to 32</p>
+<h1 id="Update">
+<a class="anchor" href="#Update" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update<a class="anchor-link" href="#Update"> </a>
+</h1>
+<p>Let's do the update. Change the age of user1 to 32 with <a href="https://pymongo.readthedocs.io/en/stable/api/pymongo/collection.html">update_one</a> method.</p>
+<ul>
+<li>filter parameter get the rows that need update.</li>
+<li>
+<a href="https://docs.mongodb.com/manual/reference/operator/update/set/">\$set</a> flag is to update the columns specified.</li>
+<li>
+<a href="https://docs.mongodb.com/manual/reference/operator/update/currentDate/">\$currentDate</a> here is to update lastModifiedAt column with the current time.</li>
+</ul>
 
 </div>
 </div>
@@ -429,26 +442,10 @@ window.onload = wrap_img;
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">myquery</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"user1"</span> <span class="p">}</span>
 <span class="n">newvalues</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"age"</span><span class="p">:</span> <span class="s2">"32"</span> <span class="p">},</span> <span class="s2">"$currentDate"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"lastModifiedAt"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"$type"</span><span class="p">:</span> <span class="s2">"date"</span> <span class="p">}}</span> <span class="p">}</span>
-<span class="n">collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">myquery</span><span class="p">,</span> <span class="n">newvalues</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="n">myquery</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="n">newvalues</span><span class="p">)</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>&lt;pymongo.results.UpdateResult at 0x7f4b73fe9340&gt;</pre>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -504,15 +501,15 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b217d096bc99f7804c7a01</td>
+      <td>61b305066dc6466313715b40</td>
       <td>user1</td>
       <td>32</td>
       <td>male</td>
-      <td>2021-12-09 14:50:57.251</td>
+      <td>2021-12-10 07:43:02.596</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b217d096bc99f7804c7a02</td>
+      <td>61b305066dc6466313715b41</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
@@ -520,7 +517,7 @@ window.onload = wrap_img;
     </tr>
     <tr>
       <th>2</th>
-      <td>61b217d096bc99f7804c7a03</td>
+      <td>61b305066dc6466313715b42</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
@@ -539,6 +536,17 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Upsert">
+<a class="anchor" href="#Upsert" aria-hidden="true"><span class="octicon octicon-link"></span></a>Upsert<a class="anchor-link" href="#Upsert"> </a>
+</h1>
+<p>As the name suggests 'upsert' means update/insert records based on the specified filters. For intansce, in the following first example, 'user1' exists in the collection. The 'upsert' performs the update. In the second example, user4 doesn't exist and it is inserted to the collection.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -594,15 +602,15 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b217d096bc99f7804c7a01</td>
+      <td>61b305066dc6466313715b40</td>
       <td>user1</td>
       <td>32</td>
       <td>male</td>
-      <td>2021-12-09 14:50:57.655</td>
+      <td>2021-12-10 07:43:02.813</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b217d096bc99f7804c7a02</td>
+      <td>61b305066dc6466313715b41</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
@@ -610,7 +618,7 @@ window.onload = wrap_img;
     </tr>
     <tr>
       <th>2</th>
-      <td>61b217d096bc99f7804c7a03</td>
+      <td>61b305066dc6466313715b42</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
@@ -684,15 +692,15 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b217d096bc99f7804c7a01</td>
+      <td>61b305066dc6466313715b40</td>
       <td>user1</td>
       <td>32</td>
       <td>male</td>
-      <td>2021-12-09 14:50:57.655</td>
+      <td>2021-12-10 07:43:02.813</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b217d096bc99f7804c7a02</td>
+      <td>61b305066dc6466313715b41</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
@@ -700,7 +708,7 @@ window.onload = wrap_img;
     </tr>
     <tr>
       <th>2</th>
-      <td>61b217d096bc99f7804c7a03</td>
+      <td>61b305066dc6466313715b42</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
@@ -708,11 +716,11 @@ window.onload = wrap_img;
     </tr>
     <tr>
       <th>3</th>
-      <td>61b217d212c824e29e2d3fbc</td>
+      <td>61b3050712c824e29e5a1755</td>
       <td>user4</td>
       <td>32</td>
       <td>female</td>
-      <td>2021-12-09 14:50:58.072</td>
+      <td>2021-12-10 07:43:03.016</td>
     </tr>
   </tbody>
 </table>
@@ -733,6 +741,8 @@ window.onload = wrap_img;
 <h1 id="Bulk-update">
 <a class="anchor" href="#Bulk-update" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bulk update<a class="anchor-link" href="#Bulk-update"> </a>
 </h1>
+<p>Obviously it's inefficient if the updates/inserts are performed one by one. To improve this, we firstly collect all the 'UpdateOne' operations and perform the updates with <a href="https://docs.mongodb.com/manual/reference/method/db.collection.bulkWrite/">'bulk_write'</a> like the following.</p>
+
 </div>
 </div>
 </div>
@@ -748,15 +758,15 @@ window.onload = wrap_img;
 
 <span class="n">updates</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">df_emplyee</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">updates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">UpdateOne</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)},</span> 
-                <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> 
-                         <span class="s2">"$currentDate"</span><span class="p">:{</span><span class="s2">"lastModifiedAt"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"$type"</span><span class="p">:</span> <span class="s2">"date"</span> <span class="p">}}</span>
-                <span class="p">},</span> 
-                <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)),</span>
-        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">updates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">UpdateOne</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)},</span> 
+            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> 
+                     <span class="s2">"$currentDate"</span><span class="p">:{</span><span class="s2">"lastModifiedAt"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"$type"</span><span class="p">:</span> <span class="s2">"date"</span> <span class="p">}}</span>
+            <span class="p">},</span> 
+            <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)),</span>
+    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">collection</span><span class="o">.</span><span class="n">bulk_write</span><span class="p">(</span><span class="n">updates</span><span class="p">)</span>
 <span class="n">show_collection</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
 </pre></div>
@@ -800,43 +810,43 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b217d096bc99f7804c7a01</td>
+      <td>61b305066dc6466313715b40</td>
       <td>user1</td>
       <td>25</td>
       <td>male</td>
-      <td>2021-12-09 14:50:58.445</td>
+      <td>2021-12-10 07:43:03.236</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b217d096bc99f7804c7a02</td>
+      <td>61b305066dc6466313715b41</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
-      <td>2021-12-09 14:50:58.445</td>
+      <td>2021-12-10 07:43:03.236</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>61b217d096bc99f7804c7a03</td>
+      <td>61b305066dc6466313715b42</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
-      <td>2021-12-09 14:50:58.445</td>
+      <td>2021-12-10 07:43:03.236</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>61b217d212c824e29e2d3fbc</td>
+      <td>61b3050712c824e29e5a1755</td>
       <td>user4</td>
       <td>32</td>
       <td>female</td>
-      <td>2021-12-09 14:50:58.072</td>
+      <td>2021-12-10 07:43:03.016</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>61b217d212c824e29e2d3fcb</td>
+      <td>61b3050712c824e29e5a1769</td>
       <td>user5</td>
       <td>65</td>
       <td>male</td>
-      <td>2021-12-09 14:50:58.445</td>
+      <td>2021-12-10 07:43:03.236</td>
     </tr>
   </tbody>
 </table>
@@ -854,9 +864,11 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="DataFrame-upsert">
-<a class="anchor" href="#DataFrame-upsert" aria-hidden="true"><span class="octicon octicon-link"></span></a>DataFrame upsert<a class="anchor-link" href="#DataFrame-upsert"> </a>
+<h1 id="DataFrame-Upsert">
+<a class="anchor" href="#DataFrame-Upsert" aria-hidden="true"><span class="octicon octicon-link"></span></a>DataFrame Upsert<a class="anchor-link" href="#DataFrame-Upsert"> </a>
 </h1>
+<p>Back to our initial requirement, we need to perform the 'Upsert' on individual DataFrame row. I created a function df_upsert for this.</p>
+
 </div>
 </div>
 </div>
@@ -894,6 +906,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's do some testing. Some updates are applied to the df_emplyee. Here are the difference between the df_emplyee and the MongoDB collection. More specifically, user6 is added and user1's age is different.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -901,7 +921,11 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">show_collection</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_emplyee</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="s1">'age'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">df_emplyee</span> <span class="o">=</span> <span class="n">df_emplyee</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">'name'</span><span class="p">:</span><span class="s1">'user6'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">:</span> <span class="mi">37</span><span class="p">,</span> <span class="s1">'sex'</span><span class="p">:</span><span class="s1">'female'</span><span class="p">},</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">show_collection</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_emplyee</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -943,43 +967,43 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b217d096bc99f7804c7a01</td>
+      <td>61b305066dc6466313715b40</td>
       <td>user1</td>
       <td>25</td>
       <td>male</td>
-      <td>2021-12-09 14:50:58.445</td>
+      <td>2021-12-10 07:43:03.236</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b217d096bc99f7804c7a02</td>
+      <td>61b305066dc6466313715b41</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
-      <td>2021-12-09 14:50:58.445</td>
+      <td>2021-12-10 07:43:03.236</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>61b217d096bc99f7804c7a03</td>
+      <td>61b305066dc6466313715b42</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
-      <td>2021-12-09 14:50:58.445</td>
+      <td>2021-12-10 07:43:03.236</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>61b217d212c824e29e2d3fbc</td>
+      <td>61b3050712c824e29e5a1755</td>
       <td>user4</td>
       <td>32</td>
       <td>female</td>
-      <td>2021-12-09 14:50:58.072</td>
+      <td>2021-12-10 07:43:03.016</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>61b217d212c824e29e2d3fcb</td>
+      <td>61b3050712c824e29e5a1769</td>
       <td>user5</td>
       <td>65</td>
       <td>male</td>
-      <td>2021-12-09 14:50:58.445</td>
+      <td>2021-12-10 07:43:03.236</td>
     </tr>
   </tbody>
 </table>
@@ -988,34 +1012,10 @@ window.onload = wrap_img;
 
 </div>
 
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_emplyee</span> <span class="o">=</span> <span class="n">df_emplyee</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">'name'</span><span class="p">:</span><span class="s1">'user6'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">:</span> <span class="mi">37</span><span class="p">,</span> <span class="s1">'sex'</span><span class="p">:</span><span class="s1">'female'</span><span class="p">},</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">df_emplyee</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea output_execute_result">
+<div class="output_html rendered_html output_subarea ">
 <div>
 <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -1043,7 +1043,7 @@ window.onload = wrap_img;
     <tr>
       <th>0</th>
       <td>user1</td>
-      <td>25</td>
+      <td>20</td>
       <td>male</td>
     </tr>
     <tr>
@@ -1133,51 +1133,51 @@ window.onload = wrap_img;
   <tbody>
     <tr>
       <th>0</th>
-      <td>61b217d096bc99f7804c7a01</td>
+      <td>61b305066dc6466313715b40</td>
       <td>user1</td>
-      <td>25</td>
+      <td>20</td>
       <td>male</td>
-      <td>2021-12-09 14:51:03.115</td>
+      <td>2021-12-10 07:43:03.581</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>61b217d096bc99f7804c7a02</td>
+      <td>61b305066dc6466313715b41</td>
       <td>user2</td>
       <td>55</td>
       <td>male</td>
-      <td>2021-12-09 14:51:03.115</td>
+      <td>2021-12-10 07:43:03.581</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>61b217d096bc99f7804c7a03</td>
+      <td>61b305066dc6466313715b42</td>
       <td>user3</td>
       <td>43</td>
       <td>male</td>
-      <td>2021-12-09 14:51:03.115</td>
+      <td>2021-12-10 07:43:03.581</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>61b217d212c824e29e2d3fbc</td>
+      <td>61b3050712c824e29e5a1755</td>
       <td>user4</td>
       <td>32</td>
       <td>female</td>
-      <td>2021-12-09 14:50:58.072</td>
+      <td>2021-12-10 07:43:03.016</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>61b217d212c824e29e2d3fcb</td>
+      <td>61b3050712c824e29e5a1769</td>
       <td>user5</td>
       <td>65</td>
       <td>male</td>
-      <td>2021-12-09 14:51:03.116</td>
+      <td>2021-12-10 07:43:03.581</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>61b217d712c824e29e2d4061</td>
+      <td>61b3050712c824e29e5a1789</td>
       <td>user6</td>
       <td>37</td>
       <td>female</td>
-      <td>2021-12-09 14:51:03.116</td>
+      <td>2021-12-10 07:43:03.581</td>
     </tr>
   </tbody>
 </table>
