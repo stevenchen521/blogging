@@ -40,7 +40,7 @@ baseurl: "/blogging" # the subpath of your site, e.g. "/blog".
 minima:
   social_links:
     twitter: StevenChen521
-    github: fastai
+    github: stevenchen521
 
 # Set this to true to get LaTeX math equation support
 use_math: true
