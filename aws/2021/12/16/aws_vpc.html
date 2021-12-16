@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>AWS VPC Exercise | Steven’s Tech Blog</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="AWS VPC Exercise" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I am recently starting to learn the AWS in this blog I logged the exercises of VPC I have done step by step." />
+<meta property="og:description" content="I am recently starting to learn the AWS in this blog I logged the exercises of VPC I have done step by step." />
+<link rel="canonical" href="https://stevenchen521.github.io/blogging/aws/2021/12/16/aws_vpc.html" />
+<meta property="og:url" content="https://stevenchen521.github.io/blogging/aws/2021/12/16/aws_vpc.html" />
+<meta property="og:site_name" content="Steven’s Tech Blog" />
+<meta property="og:image" content="https://stevenchen521.github.io/blogging/images/aws-vpc.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-12-16T00:00:00-06:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://stevenchen521.github.io/blogging/images/aws-vpc.png" />
+<meta property="twitter:title" content="AWS VPC Exercise" />
+<script type="application/ld+json">
+{"url":"https://stevenchen521.github.io/blogging/aws/2021/12/16/aws_vpc.html","@type":"BlogPosting","headline":"AWS VPC Exercise","dateModified":"2021-12-16T00:00:00-06:00","datePublished":"2021-12-16T00:00:00-06:00","image":"https://stevenchen521.github.io/blogging/images/aws-vpc.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://stevenchen521.github.io/blogging/aws/2021/12/16/aws_vpc.html"},"description":"I am recently starting to learn the AWS in this blog I logged the exercises of VPC I have done step by step.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blogging/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://stevenchen521.github.io/blogging/feed.xml" title="Steven's Tech Blog" /><link rel="shortcut icon" type="image/x-icon" href="/blogging/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.css" integrity="sha512-h7nl+xz8wgDlNM4NqKEM4F1NkIRS17M9+uJwIGwuo8vGqIl4BhuCKdxjWEINm+xyrUjNCnK5dCrhM0sj+wTIXw==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.js" integrity="sha512-/CMIhXiDA3m2c9kzRyd97MTb3MC6OVnx4TElQ7fkkoRghwDf6gi41gaT1PwF270W6+J60uTmwgeRpNpJdRV6sg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js" integrity="sha512-Do7uJAaHZm5OLrIv/yN4w0iG1dbu01kzdMNnFfu/mAqgUk6Nniv2JYHcwH+cNwjqgLcqcuBBk+JRvprLVI8azg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha512-0doc9hKxR3PYwso42RD1p5ySZpzzuDiOwMrdCEh2WdJZCjcmFKc/wEnL+z8fBQrnHoiNWbo+3fiGkOYXBdQp4A==" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blogging/">Steven&#39;s Tech Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blogging/about/">👤️ About Me</a><a class="page-link" href="/blogging/search/">🔎️ Search</a><a class="page-link" href="/blogging/categories/">📂️ Categories</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">AWS VPC Exercise</h1><p class="page-description">I am recently starting to learn the AWS in this blog I logged the exercises of VPC I have done step by step.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-12-16T00:00:00-06:00" itemprop="datePublished">
+        Dec 16, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      2 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blogging/categories/#AWS">AWS</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-justify-center">
+          <div class="px-2">
+
+    <a href="https://github.com/stevenchen521/blogging/tree/master/_notebooks/2021-12-16-aws_vpc.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/blogging/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/stevenchen521/blogging/master?filepath=_notebooks%2F2021-12-16-aws_vpc.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/blogging/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/stevenchen521/blogging/blob/master/_notebooks/2021-12-16-aws_vpc.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/blogging/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+          <div class="px-2">
+  <a href="https://deepnote.com/launch?url=https%3A%2F%2Fgithub.com%2Fstevenchen521%2Fblogging%2Fblob%2Fmaster%2F_notebooks%2F2021-12-16-aws_vpc.ipynb" target="_blank">
+      <img class="notebook-badge-image" src="/blogging/assets/badges/deepnote.svg" alt="Launch in Deepnote"/>
+  </a>
+</div>
+
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Prerequisite">Prerequisite </a></li>
+<li class="toc-entry toc-h2"><a href="#Create-VPC">Create VPC </a></li>
+<li class="toc-entry toc-h2"><a href="#Create-Subnets">Create Subnets </a></li>
+<li class="toc-entry toc-h2"><a href="#Create-private-route-table">Create private route table </a></li>
+<li class="toc-entry toc-h1"><a href="#Create-Internet-Gateway">Create Internet Gateway </a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#Edit-MAIN-route-table">Edit MAIN route table </a></li>
+<li class="toc-entry toc-h2"><a href="#NAT-Gateway">NAT Gateway </a></li>
+<li class="toc-entry toc-h2"><a href="#Configure-Security-Groups-and-NACLs">Configure Security Groups and NACLs </a></li>
+<li class="toc-entry toc-h2"><a href="#Launch-EC2s">Launch EC2s </a></li>
+<li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a></li>
+</ul>
+</li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-12-16-aws_vpc.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Prerequisite">
+<a class="anchor" href="#Prerequisite" aria-hidden="true"><span class="octicon octicon-link"></span></a>Prerequisite<a class="anchor-link" href="#Prerequisite"> </a>
+</h2>
+<p>The resource is from the <a href="https://www.youtube.com/watch?v=g2JOHLHh4rI">freeCodeCamp.org</a> presented by <a href="https://digitalcloud.training">digitalcloud.training</a>. I encourage you to watch it and do the exercise by yourself.</p>
+<ul>
+<li>Create a free <a href="https://aws.amazon.com/">AWS Account</a>.</li>
+<li>Download the <a href="https://digitalcloud.training/aws-vpc-deep-dive-download/">exercise code</a>
+</li>
+<li>Install AWS Cli and config the <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html">aws configure</a>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Create-VPC">
+<a class="anchor" href="#Create-VPC" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create VPC<a class="anchor-link" href="#Create-VPC"> </a>
+</h2>
+<p>Name: MyVPC<br>
+IPv4 CIDR Block: 10.0.0.0/16</p>
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00000.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A route table was also created automatically by AWS.<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00001.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Create-Subnets">
+<a class="anchor" href="#Create-Subnets" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create Subnets<a class="anchor-link" href="#Create-Subnets"> </a>
+</h2>
+<p>Name: <strong>Public-1A</strong><br>
+Availability Zone: <strong>us-east-1a</strong><br>
+IPv4 CIDR Block: <strong>10.0.1.0/24</strong><br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00003.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Name: <strong>Public-1B</strong><br>
+Availability Zone: <strong>us-east-1b</strong><br>
+IPv4 CIDR Block: <strong>10.0.2.0/24</strong><br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00004.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Name: <strong>Private-1A</strong><br>
+Availability Zone: <strong>us-east-1a</strong><br>
+IPv4 CIDR Block: <strong>10.0.3.0/24</strong><br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00005.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Name: <strong>Private-1B</strong><br>
+Availability Zone: <strong>us-east-1b</strong><br>
+IPv4 CIDR Block: <strong>10.0.4.0/24</strong><br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00005.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Finally, they look like this.<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00006.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For the public subnets, we tick <strong>'Enable auto-assign public IPv4 address'</strong>.<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00007.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00008.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Create-private-route-table">
+<a class="anchor" href="#Create-private-route-table" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create private route table<a class="anchor-link" href="#Create-private-route-table"> </a>
+</h2>
+<p>Name: <strong>Private-RT</strong><br>
+VPC: <strong>MyVPC</strong><br>
+Subnet associations: <strong>Private-1A, Private-1B</strong><br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00009.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Change the name of default route table to 'MAIN' and associate the Private-1A and Private-1B to the route table.<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00010.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00011.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Create-Internet-Gateway">
+<a class="anchor" href="#Create-Internet-Gateway" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create Internet Gateway<a class="anchor-link" href="#Create-Internet-Gateway"> </a>
+</h1>
+<p>Name: <strong>MyIGW</strong><br>
+VPC: <strong>MyVPC</strong></p>
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00012.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00013.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Edit-MAIN-route-table">
+<a class="anchor" href="#Edit-MAIN-route-table" aria-hidden="true"><span class="octicon octicon-link"></span></a>Edit MAIN route table<a class="anchor-link" href="#Edit-MAIN-route-table"> </a>
+</h2>
+<p>Add <strong>0.0.0.0/0</strong> to internet gateway.</p>
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00014.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00015.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="NAT-Gateway">
+<a class="anchor" href="#NAT-Gateway" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html">NAT Gateway</a><a class="anchor-link" href="#NAT-Gateway"> </a>
+</h2>
+<ul>
+<li>Create NAT Gateway<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00016.png" alt="image.png">
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>Go to PrivateRT and edit the route 0.0.0.0/0 to NAT Gateway<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00017.png" alt="image.png">
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Configure-Security-Groups-and-NACLs">
+<a class="anchor" href="#Configure-Security-Groups-and-NACLs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configure <a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html">Security Groups</a> and NACLs<a class="anchor-link" href="#Configure-Security-Groups-and-NACLs"> </a>
+</h2>
+<ul>
+<li>Create Public-Web security group<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00018.png" alt="image.png">
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>Private-App: Private App Access, Inbound rule: <strong>http/80 with source Public-Web, make sure the inbound comes from the web app front end in the Public-Web security group</strong>
+</li>
+</ul>
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00019.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Launch-EC2s">
+<a class="anchor" href="#Launch-EC2s" aria-hidden="true"><span class="octicon octicon-link"></span></a>Launch EC2s<a class="anchor-link" href="#Launch-EC2s"> </a>
+</h2>
+<p>Use the following command to launch the EC2s. 
+<strong>aws ec2 run-instances --image-id <value> --instance-type <value> --security-group-ids <value> --subnet-id <value> --key-name <value> --user-data <value>&lt;/strong&gt;&lt;/p&gt;
+<p>The variables that need to be filled:</p>
+<ul>
+<li>image-id: <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html">Amazon Machine Images (AMI)</a>, here we use ami-0ed9277fb7eb570c9</li>
+<li>instance-type: t2.micro</li>
+<li>security-group-ids: Public-Web security group.</li>
+<li>subnet-id: we create two EC2s in Public 1A and 1B, one EC2 in Private 1B.</li>
+<li>key-name: <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html">key pairs</a> of EC2.</li>
+<li>user-data are needed to be filled: the file '/user-data-subnet-id.txt' in <a href="https://digitalcloud.training/aws-vpc-deep-dive-download/">exercise code</a>
+</li>
+</ul>
+<p>Once we have these ready we run the following script(Make sure the aws cli installed and configured before this).</p>
+<ul>
+<li>
+<p>Launch instance in Public 1A<br>
+aws ec2 run-instances --image-id ami-0ed9277fb7eb570c9 --instance-type t2.micro --security-group-ids sg-0ff58fb3c21c0792d --subnet-id subnet-0f0f447e902559be9 --key-name ec2_cloud --user-data file://code/user-data-subnet-id.txt</p>
+</li>
+<li>
+<p>Launch instance in Public 1B<br>
+aws ec2 run-instances --image-id ami-0ed9277fb7eb570c9 --instance-type t2.micro --security-group-ids sg-0ff58fb3c21c0792d --subnet-id subnet-07266ffa901687189 --key-name ec2_cloud --user-data file://code/user-data-subnet-id.txt</p>
+</li>
+<li>
+<p>Launch instance in Private 1B<br>
+aws ec2 run-instances --image-id ami-0ed9277fb7eb570c9 --instance-type t2.micro --security-group-ids sg-0ff58fb3c21c0792d --subnet-id subnet-0f44825a48340db38 --key-name ec2_cloud --user-data file://code/user-data-subnet-id.txt</p>
+</li>
+</ul>
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Finally three EC2 are launched.</p>
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00020.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Visit the Instances in Public 1A and 1B.<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00021.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We see the response from the server: "This instance is in the subnet wih ID: subnet-0f0f447e902559be9".<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00022.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00023.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Change inbound rule of Public-Web security group, set the source to "my ip". Then try it also with another IP(turn VPN on). Change it back after the experiment.<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00024.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Once the VPN is turned on, the process bar was hardly moving which means the "block" was working.<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00025.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Change it back after the testing.<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00026.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Test the internal network with SSH.</p>
+<p>Ping from Public 1A to Public 1B<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00027.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00028.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00029.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ping from Public 1A to Private 1B<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00030.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00031.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Change the security group of EC2 Private 1B to Private-App<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00032.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00033.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In the Private-App, only HTTP/80 was configured that Ping(ICMP) didn't work and CURL(Http) worked from Public 1A to Private 1B<br>
+<img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00034.png" alt="image.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Conclusion">
+<a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
+</h2>
+<p>I finished this exercise and it makes me understand the core concepts of VPC. Potentially I may go to get some certificates and hopefully I can plan a schedule for it.</p>
+
+</div>
+</div>
+</div>
+&lt;/div&gt;
+ 
+
+</value></value></value></value></value></value></strong></p>
+</div>
+</div></div>
+</div>
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="stevenchen521/blogging"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/blogging/aws/2021/12/16/aws_vpc.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blogging/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blogging/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blogging/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Life learning</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/stevenchen521" title="stevenchen521"><svg class="svg-icon grey"><use xlink:href="/blogging/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/StevenChen521" title="StevenChen521"><svg class="svg-icon grey"><use xlink:href="/blogging/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
