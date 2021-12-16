@@ -1,0 +1,3 @@
+Handle images:
+1. Run `nbdev_detach file.ipynb` to export attachments and update the references, 
+2. run `jupyter nbconvert --to markdown file.ipynb`.
