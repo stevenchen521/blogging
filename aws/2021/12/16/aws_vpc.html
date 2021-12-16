@@ -8,8 +8,8 @@
 <meta name="generator" content="Jekyll v4.1.1" />
 <meta property="og:title" content="AWS VPC Exercise" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="I am recently starting to learn the AWS in this blog I logged the exercises of VPC I have done step by step." />
-<meta property="og:description" content="I am recently starting to learn the AWS in this blog I logged the exercises of VPC I have done step by step." />
+<meta name="description" content="I am recently starting to learn AWS](https://aws.amazon.com). In this blog I’m gonna share how to build [VPC step by step." />
+<meta property="og:description" content="I am recently starting to learn AWS](https://aws.amazon.com). In this blog I’m gonna share how to build [VPC step by step." />
 <link rel="canonical" href="https://stevenchen521.github.io/blogging/aws/2021/12/16/aws_vpc.html" />
 <meta property="og:url" content="https://stevenchen521.github.io/blogging/aws/2021/12/16/aws_vpc.html" />
 <meta property="og:site_name" content="Steven’s Tech Blog" />
@@ -20,7 +20,7 @@
 <meta property="twitter:image" content="https://stevenchen521.github.io/blogging/images/aws-vpc.png" />
 <meta property="twitter:title" content="AWS VPC Exercise" />
 <script type="application/ld+json">
-{"url":"https://stevenchen521.github.io/blogging/aws/2021/12/16/aws_vpc.html","@type":"BlogPosting","headline":"AWS VPC Exercise","dateModified":"2021-12-16T00:00:00-06:00","datePublished":"2021-12-16T00:00:00-06:00","image":"https://stevenchen521.github.io/blogging/images/aws-vpc.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://stevenchen521.github.io/blogging/aws/2021/12/16/aws_vpc.html"},"description":"I am recently starting to learn the AWS in this blog I logged the exercises of VPC I have done step by step.","@context":"https://schema.org"}</script>
+{"url":"https://stevenchen521.github.io/blogging/aws/2021/12/16/aws_vpc.html","@type":"BlogPosting","headline":"AWS VPC Exercise","dateModified":"2021-12-16T00:00:00-06:00","datePublished":"2021-12-16T00:00:00-06:00","image":"https://stevenchen521.github.io/blogging/images/aws-vpc.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://stevenchen521.github.io/blogging/aws/2021/12/16/aws_vpc.html"},"description":"I am recently starting to learn AWS](https://aws.amazon.com). In this blog I’m gonna share how to build [VPC step by step.","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/blogging/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://stevenchen521.github.io/blogging/feed.xml" title="Steven's Tech Blog" /><link rel="shortcut icon" type="image/x-icon" href="/blogging/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -91,13 +91,13 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">AWS VPC Exercise</h1><p class="page-description">I am recently starting to learn the AWS in this blog I logged the exercises of VPC I have done step by step.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-12-16T00:00:00-06:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">AWS VPC Exercise</h1><p class="page-description">I am recently starting to learn <a href='https://aws.amazon.com/vpc/'>AWS](https://aws.amazon.com). In this blog I'm gonna share how to build [VPC</a> step by step.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-12-16T00:00:00-06:00" itemprop="datePublished">
         Dec 16, 2021
       </time>
        • <span class="read-time" title="Estimated read time">
     
     
-      2 min read
+      4 min read
     
 </span></p>
 
@@ -143,18 +143,21 @@ window.onload = wrap_img;
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h2"><a href="#Prerequisite">Prerequisite </a></li>
+<li class="toc-entry toc-h2"><a href="#VPC-Review">VPC Review </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#VPC-Components">VPC Components </a></li>
+<li class="toc-entry toc-h3"><a href="#Amazon-VPC-Core-Knowledge">Amazon VPC Core Knowledge </a></li>
+</ul>
+</li>
 <li class="toc-entry toc-h2"><a href="#Create-VPC">Create VPC </a></li>
 <li class="toc-entry toc-h2"><a href="#Create-Subnets">Create Subnets </a></li>
 <li class="toc-entry toc-h2"><a href="#Create-private-route-table">Create private route table </a></li>
-<li class="toc-entry toc-h1"><a href="#Create-Internet-Gateway">Create Internet Gateway </a>
-<ul>
+<li class="toc-entry toc-h2"><a href="#Create-Internet-Gateway">Create Internet Gateway </a></li>
 <li class="toc-entry toc-h2"><a href="#Edit-MAIN-route-table">Edit MAIN route table </a></li>
 <li class="toc-entry toc-h2"><a href="#NAT-Gateway">NAT Gateway </a></li>
 <li class="toc-entry toc-h2"><a href="#Configure-Security-Groups-and-NACLs">Configure Security Groups and NACLs </a></li>
 <li class="toc-entry toc-h2"><a href="#Launch-EC2s">Launch EC2s </a></li>
 <li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a></li>
-</ul>
-</li>
 </ul><!--
 #################################################
 ### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
@@ -170,13 +173,59 @@ window.onload = wrap_img;
 <h2 id="Prerequisite">
 <a class="anchor" href="#Prerequisite" aria-hidden="true"><span class="octicon octicon-link"></span></a>Prerequisite<a class="anchor-link" href="#Prerequisite"> </a>
 </h2>
-<p>The resource is from the <a href="https://www.youtube.com/watch?v=g2JOHLHh4rI">freeCodeCamp.org</a> presented by <a href="https://digitalcloud.training">digitalcloud.training</a>. I encourage you to watch it and do the exercise by yourself.</p>
+<p>The resource is from the <a href="https://www.youtube.com/watch?v=g2JOHLHh4rI">freeCodeCamp.org</a> presented by <a href="https://digitalcloud.training">digitalcloud.training</a>. Neal did a quite good job I encourage you to watch the original video and do the exercise by yourself. Here I only logged the steps what I have done.</p>
 <ul>
 <li>Create a free <a href="https://aws.amazon.com/">AWS Account</a>.</li>
 <li>Download the <a href="https://digitalcloud.training/aws-vpc-deep-dive-download/">exercise code</a>
 </li>
 <li>Install AWS Cli and config the <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html">aws configure</a>
 </li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="VPC-Review">
+<a class="anchor" href="#VPC-Review" aria-hidden="true"><span class="octicon octicon-link"></span></a>VPC Review<a class="anchor-link" href="#VPC-Review"> </a>
+</h2>
+<h3 id="VPC-Components">
+<a class="anchor" href="#VPC-Components" aria-hidden="true"><span class="octicon octicon-link"></span></a>VPC Components<a class="anchor-link" href="#VPC-Components"> </a>
+</h3>
+<p><strong>Virtual Private Cloud (VPC)</strong>: A logically isolated virtual network in the AWS cloud<br>
+<strong>Subnet</strong>: A segment of a VPC's IP address range where you can place groups of isolated resources<br>
+<strong>Internet Gateway/Egress only Internet Gateway</strong>: The Amazon VPC side of a connection to the public Internet for IPv4/IPv6<br>
+<strong>Router</strong>: Routers interconnect subnets and direct traffic between Internet gateways, virtual private gateways, NAT gateways, and subnets<br>
+<strong>Peering Connection</strong>: Direct connection between two VPCs<br>
+<strong>VPC Endpoints</strong>: Private connection to public AWS services<br>
+<strong>NAT Instance</strong>: Enables Internet access for EC2 instances in private subnets (managed by you)<br>
+<strong>NAT Gateway</strong>: Enables Internet access for EC2 instances in private subnets (managed by AWS)<br>
+<strong>Virtual Private Gateway</strong>: The Amazon VPC side of a Virtual Private Network (VPN) connection<br>
+<strong>Customer Gateway</strong>: Customer side of a VPN connection<br>
+<strong>AWS Direct Connect</strong>: High speed, high bandwidth, private network connection from customer to aws<br>
+<strong>Security Group</strong>: Instance-level firewall<br>
+<strong>Network ACL</strong>: Subnet-level firewall</p>
+<h3 id="Amazon-VPC-Core-Knowledge">
+<a class="anchor" href="#Amazon-VPC-Core-Knowledge" aria-hidden="true"><span class="octicon octicon-link"></span></a>Amazon VPC Core Knowledge<a class="anchor-link" href="#Amazon-VPC-Core-Knowledge"> </a>
+</h3>
+<ul>
+<li><a href="https://medium.com/awesome-cloud/aws-vpc-difference-between-internet-gateway-and-nat-gateway-c9177e710af6">Difference between Internet Gateway and NAT Gateway</a></li>
+<li>A virtual private cloud (VPC) is a virtual network dedicated to your AWS account</li>
+<li>Analogous to having your own data center inside AWS</li>
+<li>It is logically isolated from other virtual networks in the AWS Cloud</li>
+<li>Provides complete control over the virtual networking environment including selection of IP    ranges, creation of subnets, and configuration of route tables and gateways</li>
+<li>You can launch your AWS resources, such as Amazon EC2 instances, into
+your VPC</li>
+<li>When you create a VPC, you must specify a range of IPv4
+addresses for the VPC in the form of a Classless Inter-Domain
+Routing (CIDR) block; for example, 10.0.0.0/16</li>
+<li>A VPC spans all the Availability Zones in the region</li>
+<li>You have full control over who has access to the AWS resources
+inside your VPC</li>
+<li>By default you can create up to 5 VPCs per region</li>
+<li>A default VPC is created in each region with a subnet in each AZ</li>
 </ul>
 
 </div>
@@ -311,9 +360,9 @@ Subnet associations: <strong>Private-1A, Private-1B</strong><br>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Create-Internet-Gateway">
+<h2 id="Create-Internet-Gateway">
 <a class="anchor" href="#Create-Internet-Gateway" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create Internet Gateway<a class="anchor-link" href="#Create-Internet-Gateway"> </a>
-</h1>
+</h2>
 <p>Name: <strong>MyIGW</strong><br>
 VPC: <strong>MyVPC</strong></p>
 <p><img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00012.png" alt="image.png"></p>
@@ -353,10 +402,10 @@ VPC: <strong>MyVPC</strong></p>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="NAT-Gateway">
-<a class="anchor" href="#NAT-Gateway" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html">NAT Gateway</a><a class="anchor-link" href="#NAT-Gateway"> </a>
+<a class="anchor" href="#NAT-Gateway" aria-hidden="true"><span class="octicon octicon-link"></span></a>NAT Gateway<a class="anchor-link" href="#NAT-Gateway"> </a>
 </h2>
 <ul>
-<li>Create NAT Gateway<br>
+<li>Create <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html">NAT Gateway</a><br>
 <img src="/blogging/images/copied_from_nb/2021-12-16-aws_vpc/att_00016.png" alt="image.png">
 </li>
 </ul>
