@@ -33,6 +33,17 @@
         
     
   
+    
+        ,"post3": {
+            "title": "Eigen Vectors and Values",
+            "content": "Definition . Based on wikipedia, in linear algebra, an eigenvector or characteristic vector of a linear transformation is a nonzero vector that changes at most by a scalar factor when that linear transformation is applied to it. The corresponding eigenvalue, often denoted by $ lambda$, is the factor by which the eigenvector is scaled. . It&#39;s a bit difficult to understand. Let&#39;s translate it. Suppose we have a matrix $A in{R^{m times n}}$, vector $v_1$ is one of its eigenvector. Then we have $Av_1= lambda v_1$. We know $Av_1$ is the linear transformation process applied to the vector $v_1$ with the transformer $A$. The direction of the original vector $v_1$ is not changed but just scaled by $ lambda$. . In a nutshell, the eigenvector-eigenvalue pairs tell us in which direction is a vector distorted after the linear transformation. . . Diagonalization and Eigendecomposition . We know $Av_1= lambda v_1$, supporse $V=[v_1,v_2,...,v_d]$ and $ lambda_1, lambda_2,..., lambda_d$ are the eigenvectors and eigenvalues of the matrix $A$. Then we can write the following equation based on the property of eigenvectors and eigenvalues. . $AV = V Lambda$, where $ Lambda in R^{d*d}$ is the diagonal matrix with eigenvalues filled in the diagonal line. . Diagonalization: multiply by $V^{-1}$ at both left sides we get $V^{-1}AV = V^{-1}V Lambda = Lambda$ | Eigendecomposition: multiply $V^{-1}$ at both right sides we get $A = V Lambda V^{-1}$ | . Summary . Eigenvectors and eigenvalues are widely used in machine learning mode. For instance, in PCA(Pricipal Component Analysis) it is used to decompose covariance matrix. . Reference . Sho Nakagome. (2018). Linear Algebra — Part 6: eigenvalues and eigenvectors .",
+            "url": "https://stevenchen521.github.io/blogging/math/2021/01/01/math_la_eigen.html",
+            "relUrl": "/math/2021/01/01/math_la_eigen.html",
+            "date": " • Jan 1, 2021"
+        }
+        
+    
+  
 
   
   
